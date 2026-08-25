@@ -1,0 +1,28 @@
+kind = "web"
+previewPath = "/"
+title = "Top Quality Prospect"
+description = "A professional website for Top Quality Prospect, a Non-Destructive Testing (NDT) inspection company based in Saudi Arabia. Includes company info, services, NDT capabilities, training, contact with Saudi Arabia map, and a certificate verification system with QR codes and admin panel."
+version = "1.0.0"
+id = "artifacts/top-quality-prospect"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 20461
+
+[services.development]
+run = "corepack pnpm --filter @workspace/top-quality-prospect run dev"
+
+[services.production]
+build = [ "corepack", "pnpm", "--filter", "@workspace/top-quality-prospect", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/top-quality-prospect/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "20461"
+BASE_PATH = "/"
