@@ -2,9 +2,9 @@
   "name": "workspace",
   "version": "0.0.0",
   "license": "MIT",
-  "packageManager": "pnpm@11.22.0",
+  "packageManager": "pnpm@9.15.0",
   "engines": {
-    "node": ">=20.19.0"
+    "node": ">=20.0.0"
   },
   "scripts": {
     "preinstall": "sh -c 'rm -f yarn.lock; case \"$npm_config_user_agent\" in pnpm/*) rm -f package-lock.json ;; *) if [ -n \"$REPL_ID\" ]; then echo \"Use pnpm instead\" >&2; exit 1; fi ;; esac'",
