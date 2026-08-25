@@ -1,0 +1,189 @@
+1
+
+Scope: all 10 workspace projects
+
+2
+
+✓ Lockfile passes supply-chain policies (verified 1m ago)
+
+3
+
+Lockfile is up to date, resolution step is skipped
+
+4
+
+Progress: resolved 1, reused 0, downloaded 0, added 0
+
+5
+
+Packages: +540
+
+6
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+7
+
+Packages are hard linked from the content-addressable store to the virtual store.
+
+8
+
+Content-addressable store is at: /home/u256674604/.local/share/pnpm/store/v11
+
+9
+
+Virtual store is at: node_modules/.pnpm
+
+10
+
+Progress: resolved 540, reused 540, downloaded 0, added 291
+
+11
+
+Progress: resolved 540, reused 540, downloaded 0, added 539
+
+12
+
+Progress: resolved 540, reused 540, downloaded 0, added 540, done
+
+13
+
+
+14
+
+devDependencies:
+
+15
+
++ @vercel/ncc 0.38.4
+
+16
+
++ prettier 3.9.6
+
+17
+
++ typescript 5.9.3
+
+18
+
+
+19
+
+. preinstall$ sh -c 'rm -f package-lock.json yarn.lock; case "$npm_config_user_agent" in pnpm/*) ;; *) echo "Use pnpm instead" >&2; exit 1 ;; esac'
+
+20
+
+. preinstall: Done
+
+21
+
+Done in 3.3s using pnpm v11.22.0
+
+22
+
+$ bash ./scripts/build-hostinger.sh
+
+23
+
+$ corepack pnpm run typecheck:libs && corepack pnpm -r --filter "./artifacts/**" --filter "./scripts" --if-present run typecheck
+
+24
+
+$ tsc --build
+
+25
+
+Scope: 4 of 10 workspace projects
+
+26
+
+artifacts/api-server typecheck$ tsc -p tsconfig.json --noEmit
+
+27
+
+artifacts/mockup-sandbox typecheck$ tsc -p tsconfig.json --noEmit
+
+28
+
+artifacts/top-quality-prospect typecheck$ tsc -p tsconfig.json --noEmit
+
+29
+
+scripts typecheck$ tsc -p tsconfig.json --noEmit
+
+30
+
+scripts typecheck: Done
+
+31
+
+artifacts/api-server typecheck: Done
+
+32
+
+artifacts/mockup-sandbox typecheck: Done
+
+33
+
+artifacts/top-quality-prospect typecheck: Done
+
+34
+
+failed to load config from /home/u256674604/domains/topquality-prospect.com/hbuilds/source/repository/artifacts/top-quality-prospect/vite.config.ts
+
+35
+
+error during build:
+
+36
+
+Error: The service was stopped: spawn /home/u256674604/domains/topquality-prospect.com/hbuilds/source/repository/node_modules/.pnpm/@esbuild+linux-x64@0.27.3/node_modules/@esbuild/linux-x64/bin/esbuild EACCES
+
+37
+
+at /home/u256674604/domains/topquality-prospect.com/hbuilds/source/repository/node_modules/.pnpm/esbuild@0.27.3/node_modules/esbuild/lib/main.js:718:38
+
+38
+
+at responseCallbacks. (/home/u256674604/domains/topquality-prospect.com/hbuilds/source/repository/node_modules/.pnpm/esbuild@0.27.3/node_modules/esbuild/lib/main.js:603:9)
+
+39
+
+at ChildProcess.afterClose (/home/u256674604/domains/topquality-prospect.com/hbuilds/source/repository/node_modules/.pnpm/esbuild@0.27.3/node_modules/esbuild/lib/main.js:594:28)
+
+40
+
+at ChildProcess.emit (node:events:518:28)
+
+41
+
+at ChildProcess._handle.onexit (node:internal/child_process:291:12)
+
+42
+
+at onErrorNT (node:internal/child_process:483:16)
+
+43
+
+at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+
+44
+
+undefined
+
+45
+
+/home/u256674604/domains/topquality-prospect.com/hbuilds/source/repository/artifacts/top-quality-prospect:
+
+46
+
+[ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL] Command failed with exit code 1: vite build --config vite.config.ts --configLoader runner
+
+47
+
+[ELIFECYCLE] Command failed with exit code 1.
+
+48
+
+ERROR: Failed to build the application
