@@ -1,0 +1,27 @@
+{
+  "name": "workspace",
+  "version": "0.0.0",
+  "license": "MIT",
+  "packageManager": "pnpm@11.22.0",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "scripts": {
+    "preinstall": "sh -c 'rm -f yarn.lock; case \"$npm_config_user_agent\" in pnpm/*) rm -f package-lock.json ;; *) if [ -n \"$REPL_ID\" ]; then echo \"Use pnpm instead\" >&2; exit 1; fi ;; esac'",
+    "build": "node ./scripts/build-if-needed.mjs",
+    "build:full": "bash ./scripts/build-hostinger.sh",
+    "start": "node artifacts/api-server/dist/index.js",
+    "hostinger:install": "bash ./scripts/hostinger-install.sh",
+    "db:push": "corepack pnpm --filter @workspace/db run push",
+    "data:export": "corepack pnpm --filter @workspace/scripts run export-data",
+    "data:import": "corepack pnpm --filter @workspace/scripts run import-data",
+    "typecheck:libs": "tsc --build",
+    "typecheck": "corepack pnpm run typecheck:libs && corepack pnpm -r --filter \"./artifacts/**\" --filter \"./scripts\" --if-present run typecheck"
+  },
+  "private": true,
+  "devDependencies": {
+    "@vercel/ncc": "0.38.4",
+    "prettier": "^3.9.6",
+    "typescript": "~5.9.3"
+  }
+}
