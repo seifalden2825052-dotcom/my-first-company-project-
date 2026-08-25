@@ -1,0 +1,47 @@
+1
+
+[WARN] The "pnpm" field in package.json is no longer read by pnpm. The following keys were ignored: "pnpm.onlyBuiltDependencies". See https://pnpm.io/settings for the new home of each setting.
+
+2
+
+[ERROR] This project is configured to use 10.26.1 of pnpm. Your current pnpm is v11.22.0
+
+3
+
+Corepack invoked pnpm with this version, and pnpm does not switch versions when running under corepack.
+
+4
+
+Align the "packageManager" field in package.json with "devEngines.packageManager", or invoke pnpm directly (without corepack) so it can switch versions automatically.
+
+5
+
+If you want to bypass this version check, you can set the "pmOnFail" configuration to "warn" or "ignore" (e.g. via --pm-on-fail=ignore). If using "devEngines.packageManager", you can set its "onFail" to "warn" or "ignore"
+تشخيص
+
+Root Cause: The project specifies pnpm version 10.26.1 in package.json, but the deployment environment has pnpm v11.22.0 installed via Corepack, which refuses to downgrade. Additionally, the deprecated pnpm configuration field is causing a warning that needs to be removed.
+
+الحل
+
+Update package.json: Change the packageManager field from pnpm@10.26.1 to pnpm@11.22.0 to match the environment version
+Remove deprecated configuration: Delete the pnpm.onlyBuiltDependencies field from package.json as it's no longer supported in pnpm v11
+Update pnpm configuration: Add .pnpmrc file with only-built-dependencies=["esbuild"] to replace the deprecated setting
+تشخيص
+
+The deployment failed because the project's package.json specifies pnpm version 10.26.1, but the system is running pnpm v11.22.0. Corepack is enforcing the pinned version and refusing to switch, causing a version mismatch error during dependency installation.
+
+الحل
+
+Update package.json packageManager field: Change "packageManager": "pnpm@10.26.1" to "packageManager": "pnpm@11.22.0" to match the system's installed version.
+Update pnpm configuration: In package.json, replace the deprecated "pnpm": { "onlyBuiltDependencies": ["esbuild"] } with .pnpmrc configuration file containing only-built-dependencies=esbuild (see pnpm settings documentation).
+تشخيص
+
+The deployment failed because the project is configured to use pnpm version 10.26.1 in the packageManager field, but the system is running pnpm v11.22.0 through Corepack. Pnpm under Corepack cannot automatically switch versions, causing a version mismatch error that prevents dependency installation.
+
+الحل
+
+Update package.json packageManager field:
+Change the packageManager field in package.json from "pnpm@10.26.1" to "pnpm@11.22.0" to match the system's available pnpm version.
+
+Update deprecated pnpm configuration:
+The pnpm.onlyBuiltDependencies setting in package.json is deprecated. Remove the entire "pnpm" object from package.json or migrate this setting to .pnpmrc using the new only-built-dependencies format.
