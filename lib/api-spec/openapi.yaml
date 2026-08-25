@@ -1,0 +1,717 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: Top Quality Prospect API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: certificates
+    description: Certificate operations
+  - name: admin
+    description: Admin operations
+  - name: pages
+    description: Dynamic site pages
+  - name: Storage
+    description: Object storage upload and serving endpoints.
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /certificates/verify/{code}:
+    get:
+      operationId: verifyCertificate
+      tags: [certificates]
+      summary: Verify a certificate by its code
+      parameters:
+        - name: code
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Certificate found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Certificate"
+        "404":
+          description: Certificate not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /certificates:
+    get:
+      operationId: listCertificates
+      tags: [certificates]
+      summary: List all certificates (admin)
+      responses:
+        "200":
+          description: List of certificates
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Certificate"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: createCertificate
+      tags: [certificates]
+      summary: Create a new certificate (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CertificateInput"
+      responses:
+        "201":
+          description: Certificate created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Certificate"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /certificates/{id}:
+    get:
+      operationId: getCertificate
+      tags: [certificates]
+      summary: Get certificate by ID (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "200":
+          description: Certificate found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Certificate"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: updateCertificate
+      tags: [certificates]
+      summary: Update a certificate (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CertificateUpdate"
+      responses:
+        "200":
+          description: Certificate updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Certificate"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteCertificate
+      tags: [certificates]
+      summary: Delete a certificate (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "204":
+          description: Certificate deleted
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /certificates/stats:
+    get:
+      operationId: getCertificateStats
+      tags: [certificates]
+      summary: Get certificate statistics
+      responses:
+        "200":
+          description: Certificate statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CertificateStats"
+
+  /pages:
+    get:
+      operationId: listPages
+      tags: [pages]
+      summary: List pages (published only for public; all when admin)
+      responses:
+        "200":
+          description: List of pages
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/SitePage"
+    post:
+      operationId: createPage
+      tags: [pages]
+      summary: Create a page (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SitePageInput"
+      responses:
+        "201":
+          description: Page created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SitePage"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /pages/slug/{slug}:
+    get:
+      operationId: getPageBySlug
+      tags: [pages]
+      summary: Get a published page by slug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Page found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SitePage"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /pages/{id}:
+    put:
+      operationId: updatePage
+      tags: [pages]
+      summary: Update a page (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SitePageUpdate"
+      responses:
+        "200":
+          description: Page updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SitePage"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deletePage
+      tags: [pages]
+      summary: Delete a page (admin)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: number
+      responses:
+        "204":
+          description: Page deleted
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /storage/uploads/request-url:
+    post:
+      tags: [Storage]
+      operationId: requestUploadUrl
+      summary: Request a presigned URL for file upload (admin)
+      description: |
+        Returns a presigned GCS URL for direct upload. The client sends JSON
+        metadata here, then uploads the file directly to the returned URL.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UploadUrlRequest"
+      responses:
+        "200":
+          description: Presigned upload URL generated.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UploadUrlResponse"
+        "400":
+          description: Missing or invalid required fields.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Failed to generate upload URL.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /storage/public-objects/{filePath}:
+    get:
+      tags: [Storage]
+      operationId: getPublicObject
+      summary: Serve a public asset from PUBLIC_OBJECT_SEARCH_PATHS
+      parameters:
+        - name: filePath
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Object content streamed with correct Content-Type.
+          content:
+            "*/*":
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: File not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Failed to serve public object.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /storage/objects/{objectPath}:
+    get:
+      tags: [Storage]
+      operationId: getStorageObject
+      summary: Serve an object entity from PRIVATE_OBJECT_DIR
+      parameters:
+        - name: objectPath
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Object content streamed with correct Content-Type.
+          content:
+            "*/*":
+              schema:
+                type: string
+                format: binary
+        "404":
+          description: Object not found.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: Failed to serve object.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/login:
+    post:
+      operationId: adminLogin
+      tags: [admin]
+      summary: Admin login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminCredentials"
+      responses:
+        "200":
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminSession"
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /admin/logout:
+    post:
+      operationId: adminLogout
+      tags: [admin]
+      summary: Admin logout
+      responses:
+        "200":
+          description: Logout successful
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminSession"
+
+  /admin/me:
+    get:
+      operationId: getAdminSession
+      tags: [admin]
+      summary: Check admin session
+      responses:
+        "200":
+          description: Session info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminSession"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    Certificate:
+      type: object
+      required: [id, certificateNumber, holderName, ndtMethod, level, issuedDate, expirationDate, status, issuedBy, createdAt]
+      properties:
+        id:
+          type: number
+        certificateNumber:
+          type: string
+        holderName:
+          type: string
+        ndtMethod:
+          type: string
+        level:
+          type: string
+        issuedDate:
+          type: string
+        expirationDate:
+          type: string
+        status:
+          type: string
+          enum: [valid, expired, revoked]
+        issuedBy:
+          type: string
+        notes:
+          type: ["string", "null"]
+        qrCodeUrl:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+
+    CertificateInput:
+      type: object
+      required: [certificateNumber, holderName, ndtMethod, level, issuedDate, expirationDate, issuedBy]
+      properties:
+        certificateNumber:
+          type: string
+          minLength: 1
+        holderName:
+          type: string
+          minLength: 1
+        ndtMethod:
+          type: string
+          minLength: 1
+        level:
+          type: string
+          minLength: 1
+        issuedDate:
+          type: string
+        expirationDate:
+          type: string
+        issuedBy:
+          type: string
+          minLength: 1
+        notes:
+          type: string
+        status:
+          type: string
+          enum: [valid, expired, revoked]
+
+    CertificateUpdate:
+      type: object
+      properties:
+        holderName:
+          type: string
+          minLength: 1
+        ndtMethod:
+          type: string
+          minLength: 1
+        level:
+          type: string
+          minLength: 1
+        issuedDate:
+          type: string
+        expirationDate:
+          type: string
+        issuedBy:
+          type: string
+          minLength: 1
+        notes:
+          type: string
+        status:
+          type: string
+          enum: [valid, expired, revoked]
+
+    CertificateStats:
+      type: object
+      required: [total, valid, expired, revoked]
+      properties:
+        total:
+          type: number
+        valid:
+          type: number
+        expired:
+          type: number
+        revoked:
+          type: number
+
+    PageBlock:
+      type: object
+      required: [id, label, type, content]
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        type:
+          type: string
+          enum: [heading, text, price, image, video]
+        content:
+          type: string
+
+    SitePage:
+      type: object
+      required: [id, title, slug, published, blocks, createdAt]
+      properties:
+        id:
+          type: number
+        title:
+          type: string
+        slug:
+          type: string
+        published:
+          type: boolean
+        blocks:
+          type: array
+          items:
+            $ref: "#/components/schemas/PageBlock"
+        createdAt:
+          type: string
+
+    SitePageInput:
+      type: object
+      required: [title]
+      properties:
+        title:
+          type: string
+          minLength: 1
+        published:
+          type: boolean
+        blocks:
+          type: array
+          items:
+            $ref: "#/components/schemas/PageBlock"
+
+    SitePageUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+        published:
+          type: boolean
+        blocks:
+          type: array
+          items:
+            $ref: "#/components/schemas/PageBlock"
+
+    UploadUrlRequest:
+      type: object
+      required: [name, size, contentType]
+      properties:
+        name:
+          type: string
+          minLength: 1
+        size:
+          type: number
+          minimum: 1
+        contentType:
+          type: string
+          minLength: 1
+
+    UploadUrlResponse:
+      type: object
+      required: [uploadURL, objectPath]
+      properties:
+        uploadURL:
+          type: string
+        objectPath:
+          type: string
+        metadata:
+          $ref: "#/components/schemas/UploadUrlRequest"
+
+    AdminCredentials:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+
+    AdminSession:
+      type: object
+      required: [authenticated]
+      properties:
+        authenticated:
+          type: boolean
+        username:
+          type: ["string", "null"]
