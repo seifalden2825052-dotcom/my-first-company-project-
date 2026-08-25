@@ -1,0 +1,109 @@
+1
+
+Scope: all 10 workspace projects
+
+2
+
+✓ Lockfile passes supply-chain policies (verified 1d ago)
+
+3
+
+Lockfile is up to date, resolution step is skipped
+
+4
+
+Progress: resolved 1, reused 0, downloaded 0, added 0
+
+5
+
+Packages: +539
+
+6
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+7
+
+Packages are hard linked from the content-addressable store to the virtual store.
+
+8
+
+Content-addressable store is at: /home/u256674604/.local/share/pnpm/store/v11
+
+9
+
+Virtual store is at: node_modules/.pnpm
+
+10
+
+Progress: resolved 539, reused 515, downloaded 0, added 226
+
+11
+
+Progress: resolved 539, reused 539, downloaded 0, added 493
+
+12
+
+Progress: resolved 539, reused 539, downloaded 0, added 539, done
+
+13
+
+
+14
+
+devDependencies:
+
+15
+
++ prettier 3.9.6
+
+16
+
++ typescript 5.9.3
+
+17
+
+
+18
+
+. preinstall$ sh -c 'rm -f package-lock.json yarn.lock; case "$npm_config_user_agent" in pnpm/*) ;; *) echo "Use pnpm instead" >&2; exit 1 ;; esac'
+
+19
+
+. preinstall: Done
+
+20
+
+[ERR_PNPM_IGNORED_BUILDS] Ignored build scripts: esbuild@0.27.3
+
+21
+
+
+22
+
+Run "pnpm approve-builds" to pick which dependencies should be allowed to run scripts.
+
+23
+
+ERROR: Failed to install dependencies
+تشخيص
+
+esbuild@0.27.3 package has build scripts that were ignored for security reasons. This is a pnpm safety feature that prevents untrusted build scripts from running by default. The error message indicates that build script execution needs to be explicitly approved before dependencies can be fully installed.]]>
+
+الحل
+
+Root cause: pnpm build script security policy is blocking esbuild installation.
+Approve build scripts: Run pnpm approve-builds to review and approve the build scripts for esbuild and other dependencies that require compilation.
+Alternative approach: Add or modify the .pnpm-approve-builds.json file to explicitly allow build scripts for esbuild. The file should contain approved package names.
+Verify configuration: Ensure your .pnpmrc file doesn't have overly restrictive build script policies that would prevent necessary dependencies from installing.
+تحليل
+
+تشخيص
+
+The deployment failed because pnpm detected ignored build scripts for the esbuild dependency, which requires compilation during installation. The [ERR_PNPM_IGNORED_BUILDS] error indicates that pnpm's security policy is blocking the execution of build scripts for this package, preventing the installation from completing.
+
+الحل
+
+Add/modify project files: Create or update .pnpm-approve-builds.json file with the following content to approve the esbuild build script:
+{"esbuild": true}
+Alternative approach: If the above file already exists (as shown in project structure), verify its content includes approval for esbuild. If not, update it to include "esbuild": true
