@@ -7,19 +7,11 @@ import { existsSync } from "fs";
 import { join } from "path";
 import router from "./routes";
 import { logger } from "./lib/logger";
-
-function getSessionSecret(): string {
-  const secret = process.env.SESSION_SECRET;
-  if (secret && secret.length >= 32) return secret;
-  if (process.env.NODE_ENV === "production") {
-    // Fail closed: never run production with a missing or weak session secret
-    throw new Error(
-      "SESSION_SECRET must be set to a strong value (>= 32 chars) in production",
-    );
-  }
-  // Development-only fallback
-  return secret ?? "tqp-dev-only-session-secret";
-}
+import {
+  ADMIN_AUTH_COOKIE,
+  getAdminUsernameFromToken,
+  getSessionSecret,
+} from "./lib/adminAuth";
 
 const app: Express = express();
 
@@ -65,6 +57,18 @@ app.use(
     },
   }),
 );
+
+// Vercel Serverless instances do not share express-session's in-memory store.
+// Rehydrate the admin identity from a signed cookie so every instance can
+// authorize the same browser consistently.
+app.use((req, _res, next) => {
+  const username = getAdminUsernameFromToken(req.cookies?.[ADMIN_AUTH_COOKIE]);
+  if (username) {
+    (req.session as any).adminAuthenticated = true;
+    (req.session as any).adminUsername = username;
+  }
+  next();
+});
 
 app.use("/api", router);
 
