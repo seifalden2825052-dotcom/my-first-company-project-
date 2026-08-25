@@ -1,9 +1,14 @@
 {
   "version": 2,
+  "buildCommand": "pnpm --filter @workspace/top-quality-prospect run build",
+  "outputDirectory": "artifacts/top-quality-prospect/dist/public",
   "functions": {
     "api/index.mjs": {
-      "includeFiles": "artifacts/top-quality-prospect/dist/public/**"
+      "includeFiles": "artifacts/api-server/dist-serverless/**"
+    },
+    "api/[...path].mjs": {
+      "includeFiles": "artifacts/api-server/dist-serverless/**"
     }
   },
-  "rewrites": [{ "source": "/(.*)", "destination": "/api" }]
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
 }
