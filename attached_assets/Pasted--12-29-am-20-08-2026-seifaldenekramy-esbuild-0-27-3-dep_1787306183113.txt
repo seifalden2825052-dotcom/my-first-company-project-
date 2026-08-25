@@ -1,0 +1,33 @@
+[12:29 am, 20/08/2026] seifaldenekramy: 
+
+esbuild@0.27.3 dependency that was not approved to run. pnpm's security feature blocks unapproved build scripts by default, preventing dependency installation from completing. The .pnpm-approve-builds.json file exists in the project but does not contain approval for esbuild's build script.]]>
+
+الحل
+
+Add/modify project files: Update .pnpm-approve-builds.json to approve the esbuild build script. The file should contain:
+{
+  "esbuild": true
+}
+This allows pnpm to execute esbuild's build script during dependency installation, which is necessary for esbuild to function properly in the project.
+
+]]>
+[12:30 am, 20/08/2026] seifaldenekramy: تحليل
+
+تشخيص
+
+The deployment failed because pnpm blocked build scripts from running, specifically for the esbuild dependency. This is a security feature in pnpm that requires explicit approval before allowing packages to execute build scripts during installation.
+
+الحل
+
+Approve builds: Run pnpm approve-builds to allow the blocked build scripts (esbuild) to execute, then retry the deployment
+Alternative: If pnpm approve-builds is not available in your environment, add or update the .pnpm-approve-builds.json file (already present in your project) to explicitly allow esbuild to run build scripts
+[12:30 am, 20/08/2026] seifaldenekramy: تشخيص
+
+The deployment failed because pnpm is blocking the build scripts for the esbuild dependency. The error [ERR_PNPM_IGNORED_BUILDS] indicates that pnpm's security policy is preventing esbuild from running its native build scripts, which are required for it to function properly. This is a known security feature in pnpm that requires explicit approval before allowing dependencies to execute build scripts.
+
+الحل
+
+Add the build approval configuration: Create or update .pnpm-approve-builds.json file in the root directory with the following content to approve esbuild's build scripts:
+{"esbuild": true}
+Alternative approach: Run pnpm approve-builds locally to generate the approval file, then commit it to your repository before deploying.
+Verify the file exists: The project structure shows .pnpm-approve-builds.json exists but may be empty or misconfigured. Ensure it contains the proper approval for esbuild.
