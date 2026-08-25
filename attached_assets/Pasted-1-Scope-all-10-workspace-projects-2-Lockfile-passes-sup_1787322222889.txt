@@ -1,0 +1,155 @@
+1
+
+Scope: all 10 workspace projects
+
+2
+
+✓ Lockfile passes supply-chain policies (verified 1d ago)
+
+3
+
+Lockfile is up to date, resolution step is skipped
+
+4
+
+Progress: resolved 1, reused 0, downloaded 0, added 0
+
+5
+
+Packages: +539
+
+6
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+7
+
+Progress: resolved 539, reused 319, downloaded 0, added 0
+
+8
+
+Packages are hard linked from the content-addressable store to the virtual store.
+
+9
+
+Content-addressable store is at: /home/u256674604/.local/share/pnpm/store/v11
+
+10
+
+Virtual store is at: node_modules/.pnpm
+
+11
+
+Progress: resolved 539, reused 539, downloaded 0, added 270
+
+12
+
+Progress: resolved 539, reused 539, downloaded 0, added 539, done
+
+13
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall$ node install.js
+
+14
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: node:internal/child_process:1120
+
+15
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: result.error = new ErrnoException(result.error, 'spawnSync ' + options.file);
+
+16
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: ^
+
+17
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: Error: spawnSync /home/u256674604/domains/topquality-prospect.com/hbuilds/source/repository/node_modules/.pnpm/esbuild@0.27.3/node_modules/esbuild/bin/esbuild EACCES
+
+18
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: at Object.spawnSync (node:internal/child_process:1120:20)
+
+19
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: at spawnSync (node:child_process:901:24)
+
+20
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: at Object.execFileSync (node:child_process:944:15)
+
+21
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: at validateBinaryVersion (/home/u256674604/domains/topquality-prospect.com/hbuilds/source/repository/node_modules/.pnpm/esbuild@0.27.3/node_modules/esbuild/install.js:102:28)
+
+22
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: at /home/u256674604/domains/topquality-prospect.com/hbuilds/source/repository/node_modules/.pnpm/esbuild@0.27.3/node_modules/esbuild/install.js:287:5 {
+
+23
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: errno: -13,
+
+24
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: code: 'EACCES',
+
+25
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: syscall: 'spawnSync /home/u256674604/domains/topquality-prospect.com/hbuilds/source/repository/node_modules/.pnpm/esbuild@0.27.3/node_modules/esbuild/bin/esbuild',
+
+26
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: path: '/home/u256674604/domains/topquality-prospect.com/hbuilds/source/repository/node_modules/.pnpm/esbuild@0.27.3/node_modules/esbuild/bin/esbuild',
+
+27
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: spawnargs: [ '--version' ],
+
+28
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: error: [Circular *1],
+
+29
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: status: null,
+
+30
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: signal: null,
+
+31
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: output: null,
+
+32
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: pid: 0,
+
+33
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: stdout: undefined,
+
+34
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: stderr: undefined
+
+35
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: }
+
+36
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: Node.js v22.18.0
+
+37
+
+.../esbuild@0.27.3/node_modules/esbuild postinstall: Failed
+
+38
+
+[ELIFECYCLE] Command failed with exit code 1.
+
+39
+
+ERROR: Failed to install dependencies
