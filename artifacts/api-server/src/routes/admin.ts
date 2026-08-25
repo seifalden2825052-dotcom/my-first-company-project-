@@ -1,10 +1,14 @@
 import { Router, type IRouter } from "express";
 import { AdminLoginBody } from "@workspace/api-zod";
+import {
+  ADMIN_AUTH_COOKIE,
+  createAdminToken,
+} from "../lib/adminAuth";
 
 const router: IRouter = Router();
 
-const ADMIN_USERNAME = process.env.ADMIN_USERNAME ?? "admin";
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD ?? "TQP@2010";
+const ADMIN_USERNAME = (process.env.ADMIN_USERNAME ?? "admin").trim();
+const ADMIN_PASSWORD = (process.env.ADMIN_PASSWORD ?? "TQP@2010").trim();
 
 router.post("/admin/login", async (req, res): Promise<void> => {
   const parsed = AdminLoginBody.safeParse(req.body);
@@ -22,12 +26,20 @@ router.post("/admin/login", async (req, res): Promise<void> => {
 
   (req.session as any).adminAuthenticated = true;
   (req.session as any).adminUsername = username;
+  res.cookie(ADMIN_AUTH_COOKIE, createAdminToken(username), {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: 24 * 60 * 60 * 1000,
+    path: "/",
+  });
 
   res.json({ authenticated: true, username });
 });
 
 router.post("/admin/logout", async (req, res): Promise<void> => {
   req.session.destroy(() => {
+    res.clearCookie(ADMIN_AUTH_COOKIE, { path: "/" });
     res.json({ authenticated: false, username: null });
   });
 });
