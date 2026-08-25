@@ -1,0 +1,187 @@
+1
+
+Scope: all 10 workspace projects
+
+2
+
+✓ Lockfile passes supply-chain policies (verified 1d ago)
+
+3
+
+Lockfile is up to date, resolution step is skipped
+
+4
+
+Progress: resolved 1, reused 0, downloaded 0, added 0
+
+5
+
+Packages: +539
+
+6
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+7
+
+Packages are hard linked from the content-addressable store to the virtual store.
+
+8
+
+Content-addressable store is at: /home/u256674604/.local/share/pnpm/store/v11
+
+9
+
+Virtual store is at: node_modules/.pnpm
+
+10
+
+Progress: resolved 539, reused 539, downloaded 0, added 329
+
+11
+
+Progress: resolved 539, reused 539, downloaded 0, added 538
+
+12
+
+Progress: resolved 539, reused 539, downloaded 0, added 539, done
+
+13
+
+
+14
+
+devDependencies:
+
+15
+
++ prettier 3.9.6
+
+16
+
++ typescript 5.9.3
+
+17
+
+
+18
+
+. preinstall$ sh -c 'rm -f package-lock.json yarn.lock; case "$npm_config_user_agent" in pnpm/*) ;; *) echo "Use pnpm instead" >&2; exit 1 ;; esac'
+
+19
+
+. preinstall: Done
+
+20
+
+Done in 3.4s using pnpm v11.22.0
+
+21
+
+$ bash ./scripts/prepare-esbuild.sh
+
+22
+
+node:internal/child_process:1120
+
+23
+
+result.error = new ErrnoException(result.error, 'spawnSync ' + options.file);
+
+24
+
+^
+
+25
+
+
+26
+
+Error: spawnSync /home/u256674604/domains/topquality-prospect.com/hbuilds/source/repository/node_modules/.pnpm/esbuild@0.27.3/node_modules/esbuild/bin/esbuild EACCES
+
+27
+
+at Object.spawnSync (node:internal/child_process:1120:20)
+
+28
+
+at spawnSync (node:child_process:901:24)
+
+29
+
+at Object.execFileSync (node:child_process:944:15)
+
+30
+
+at validateBinaryVersion (/home/u256674604/domains/topquality-prospect.com/hbuilds/source/repository/node_modules/.pnpm/esbuild@0.27.3/node_modules/esbuild/install.js:102:28)
+
+31
+
+at /home/u256674604/domains/topquality-prospect.com/hbuilds/source/repository/node_modules/.pnpm/esbuild@0.27.3/node_modules/esbuild/install.js:287:5 {
+
+32
+
+errno: -13,
+
+33
+
+code: 'EACCES',
+
+34
+
+syscall: 'spawnSync /home/u256674604/domains/topquality-prospect.com/hbuilds/source/repository/node_modules/.pnpm/esbuild@0.27.3/node_modules/esbuild/bin/esbuild',
+
+35
+
+path: '/home/u256674604/domains/topquality-prospect.com/hbuilds/source/repository/node_modules/.pnpm/esbuild@0.27.3/node_modules/esbuild/bin/esbuild',
+
+36
+
+spawnargs: [ '--version' ],
+
+37
+
+error: [Circular *1],
+
+38
+
+status: null,
+
+39
+
+signal: null,
+
+40
+
+output: null,
+
+41
+
+pid: 0,
+
+42
+
+stdout: undefined,
+
+43
+
+stderr: undefined
+
+44
+
+}
+
+45
+
+
+46
+
+Node.js v22.18.0
+
+47
+
+[ELIFECYCLE] Command failed with exit code 1.
+
+48
+
+ERROR: Failed to build the application
