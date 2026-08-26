@@ -12,6 +12,26 @@ import {
 
 const router: IRouter = Router();
 
+/**
+ * Resolve the browser-facing origin behind Replit/Vercel/Hostinger proxies.
+ * QR image URLs stay relative so the browser keeps the admin cookie, while
+ * the URL encoded inside the QR uses the public forwarded origin.
+ */
+function forwardedOrigin(req: { protocol: string; get(name: string): string | undefined }): string {
+  const configuredOrigin = process.env.PUBLIC_APP_ORIGIN?.trim().replace(/\/+$/, "");
+  if (configuredOrigin) return configuredOrigin;
+
+  const forwardedHost = req.get("x-forwarded-host")?.split(",")[0]?.trim();
+  const host = forwardedHost || req.get("host");
+  const forwardedProto = req.get("x-forwarded-proto")?.split(",")[0]?.trim();
+  const protocol = forwardedProto || req.protocol;
+  return `${protocol}://${host}`;
+}
+
+function qrEndpointPath(certificateNumber: string): string {
+  return `/api/certificates/qr/${encodeURIComponent(certificateNumber)}`;
+}
+
 /** Compute real status from expiration date (revoked stays revoked) */
 function computeStatus(cert: { expirationDate: string; status: string }): string {
   if (cert.status === "revoked") return "revoked";
@@ -42,9 +62,8 @@ router.get("/certificates/verify/:code", async (req, res): Promise<void> => {
 
   // QR code URL only exposed to authenticated admins
   const isAdminSession = !!(req.session as any)?.adminAuthenticated;
-  const origin = `${req.protocol}://${req.get("host")}`;
   const qrCodeUrl = isAdminSession
-    ? `${origin}/api/certificates/qr/${cert.certificateNumber}`
+    ? qrEndpointPath(cert.certificateNumber)
     : null;
 
   res.json({ ...cert, status: computeStatus(cert), qrCodeUrl });
@@ -72,9 +91,8 @@ router.get("/certificates/qr/:code", async (req, res): Promise<void> => {
 
   try {
     const QRCode = await import("qrcode");
-    // The QR code encodes the public verification URL (respect the proxy's forwarded host)
-    const host = req.get("x-forwarded-host")?.split(",")[0]?.trim() ?? req.get("host");
-    const origin = `${req.protocol}://${host}`;
+    // The QR code encodes the public verification URL (respect the proxy's forwarded origin)
+    const origin = forwardedOrigin(req);
     const verifyUrl = `${origin}/certificates?verify=${encodeURIComponent(cert.certificateNumber)}`;
     const qrBuffer = await QRCode.toBuffer(verifyUrl, { type: "png", width: 300, margin: 2 });
     res.setHeader("Content-Type", "image/png");
@@ -113,11 +131,10 @@ router.get("/certificates", async (req, res): Promise<void> => {
     .from(certificatesTable)
     .orderBy(certificatesTable.createdAt);
 
-  const origin = `${req.protocol}://${req.get("host")}`;
   const certsWithQr = certs.map((c) => ({
     ...c,
     status: computeStatus(c),
-    qrCodeUrl: `${origin}/api/certificates/qr/${c.certificateNumber}`,
+    qrCodeUrl: qrEndpointPath(c.certificateNumber),
   }));
 
   res.json(certsWithQr);
@@ -144,8 +161,7 @@ router.post("/certificates", async (req, res): Promise<void> => {
     .values({ ...rest, status: statusVal })
     .returning();
 
-  const origin = `${req.protocol}://${req.get("host")}`;
-  res.status(201).json({ ...cert, status: computeStatus(cert), qrCodeUrl: `${origin}/api/certificates/qr/${cert.certificateNumber}` });
+  res.status(201).json({ ...cert, status: computeStatus(cert), qrCodeUrl: qrEndpointPath(cert.certificateNumber) });
 });
 
 // Admin: get certificate by ID
@@ -171,8 +187,7 @@ router.get("/certificates/:id", async (req, res): Promise<void> => {
     return;
   }
 
-  const origin = `${req.protocol}://${req.get("host")}`;
-  res.json({ ...cert, status: computeStatus(cert), qrCodeUrl: `${origin}/api/certificates/qr/${cert.certificateNumber}` });
+  res.json({ ...cert, status: computeStatus(cert), qrCodeUrl: qrEndpointPath(cert.certificateNumber) });
 });
 
 // Admin: update certificate
@@ -205,8 +220,7 @@ router.put("/certificates/:id", async (req, res): Promise<void> => {
     return;
   }
 
-  const origin = `${req.protocol}://${req.get("host")}`;
-  res.json({ ...cert, status: computeStatus(cert), qrCodeUrl: `${origin}/api/certificates/qr/${cert.certificateNumber}` });
+  res.json({ ...cert, status: computeStatus(cert), qrCodeUrl: qrEndpointPath(cert.certificateNumber) });
 });
 
 // Admin: delete certificate

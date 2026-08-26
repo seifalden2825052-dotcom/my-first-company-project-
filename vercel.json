@@ -8,6 +8,12 @@
     },
     "api/[...path].mjs": {
       "includeFiles": "artifacts/api-server/dist-serverless/**"
+    },
+    "api/certificates/verify/[code].mjs": {
+      "includeFiles": "artifacts/api-server/dist-serverless/**"
+    },
+    "api/certificates/qr/[code].mjs": {
+      "includeFiles": "artifacts/api-server/dist-serverless/**"
     }
   },
   "rewrites": [
@@ -17,6 +23,3 @@
     }
   ]
 }
-
-
-

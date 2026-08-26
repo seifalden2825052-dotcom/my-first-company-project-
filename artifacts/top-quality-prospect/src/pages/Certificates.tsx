@@ -223,11 +223,48 @@ function CertificateCard({ certificate }: { certificate: Certificate }) {
 /* ───────────── QR panel (admin only) ───────────── */
 function QrPanel({ cert, compact }: { cert: Certificate; compact?: boolean }) {
   const [copied, setCopied] = useState(false);
+  const [qrImageUrl, setQrImageUrl] = useState<string | null>(null);
+  const [qrError, setQrError] = useState(false);
+
+  useEffect(() => {
+    if (!cert.qrCodeUrl) {
+      setQrImageUrl(null);
+      return;
+    }
+
+    let objectUrl: string | null = null;
+    const controller = new AbortController();
+    setQrError(false);
+
+    fetch(cert.qrCodeUrl, {
+      credentials: "include",
+      signal: controller.signal,
+      headers: { Accept: "image/png" },
+    })
+      .then(async (response) => {
+        if (!response.ok) throw new Error(`QR request failed: ${response.status}`);
+        const blob = await response.blob();
+        objectUrl = URL.createObjectURL(blob);
+        setQrImageUrl(objectUrl);
+      })
+      .catch((error: unknown) => {
+        if ((error as Error).name !== "AbortError") {
+          setQrImageUrl(null);
+          setQrError(true);
+        }
+      });
+
+    return () => {
+      controller.abort();
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
+    };
+  }, [cert.qrCodeUrl]);
 
   const copyQr = async () => {
     if (!cert.qrCodeUrl) return;
     try {
       const resp = await fetch(cert.qrCodeUrl, { credentials: "include" });
+      if (!resp.ok) throw new Error(`QR request failed: ${resp.status}`);
       const blob = await resp.blob();
       await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
       setCopied(true);
@@ -247,12 +284,21 @@ function QrPanel({ cert, compact }: { cert: Certificate; compact?: boolean }) {
   return (
     <div className={`flex flex-col items-center ${compact ? "" : "pt-4"}`}>
       <div className="bg-white p-3 mb-3">
-        <img
-          src={cert.qrCodeUrl}
-          alt={`QR code for ${cert.certificateNumber}`}
-          className={compact ? "w-32 h-32 object-contain" : "w-44 h-44 object-contain"}
-          data-testid="img-qrcode"
-        />
+        {qrImageUrl ? (
+          <img
+            src={qrImageUrl}
+            alt={`QR code for ${cert.certificateNumber}`}
+            className={compact ? "w-32 h-32 object-contain" : "w-44 h-44 object-contain"}
+            data-testid="img-qrcode"
+          />
+        ) : (
+          <div
+            className={`${compact ? "w-32 h-32" : "w-44 h-44"} flex items-center justify-center bg-slate-100 px-4 text-center text-xs font-medium text-slate-500`}
+            data-testid="qr-loading"
+          >
+            {qrError ? "QR unavailable — refresh and try again" : "Loading QR..."}
+          </div>
+        )}
       </div>
       <div className="flex gap-2">
         <button
@@ -264,8 +310,12 @@ function QrPanel({ cert, compact }: { cert: Certificate; compact?: boolean }) {
           {copied ? "COPIED!" : "COPY QR"}
         </button>
         <a
-          href={cert.qrCodeUrl}
+          href={qrImageUrl ?? undefined}
           download={`qr-${cert.certificateNumber}.png`}
+          aria-disabled={!qrImageUrl}
+          onClick={(event) => {
+            if (!qrImageUrl) event.preventDefault();
+          }}
           data-testid="button-download-qr"
           className="flex items-center gap-2 text-primary border border-primary/40 px-4 py-2 text-xs font-display font-bold tracking-wider hover:bg-primary hover:text-white transition-colors"
         >
